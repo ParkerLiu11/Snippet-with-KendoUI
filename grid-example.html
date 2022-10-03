@@ -17,6 +17,7 @@
     <script>
       $(function () {
         $.getJSON("order.json", function (data) {
+          // Specify column fields and load grid data
           var gridDataSource = new kendo.data.DataSource({
             data,
             schema: {
@@ -37,6 +38,7 @@
             },
           });
 
+          // Grid column configuration
           $("#ordersGrid").kendoGrid({
             dataSource: gridDataSource,
             height: 400,
