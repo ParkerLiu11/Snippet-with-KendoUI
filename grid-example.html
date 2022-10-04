@@ -12,61 +12,86 @@
     <script src="https://kendo.cdn.telerik.com/2022.3.913/js/kendo.all.min.js"></script>
   </head>
   <body>
+    <div id="dropdownfilter"></div>
+    &nbsp;
     <div id="ordersGrid"></div>
 
     <script>
       $(function () {
+        let gridDataSource = "";
         $.getJSON("order.json", function (data) {
-          // Specify column fields and load grid data
-          var gridDataSource = new kendo.data.DataSource({
-            data,
-            schema: {
-              model: {
-                fields: {
-                  OrderID: { type: "number" },
-                  Freight: { type: "number" },
-                  OrderDate: { type: "date" },
-                  ShipCountry: { type: "string" },
-                  ShipCity: { type: "string" },
+          $("#dropdownfilter").kendoDropDownList({
+            dataTextField: "OrderID",
+            dataValueField: "OrderID",
+            height: "400px",
+            dataSource: data,
+            filter: "contains",
+            change: function (e) {
+              filteredData = data.filter(
+                (list) => list.OrderID === this.value()
+              );
+              init(filteredData);
+            },
+          });
+          init(data);
+          function init(data) {
+            gridDataSource = new kendo.data.DataSource({
+              data,
+              schema: {
+                model: {
+                  fields: {
+                    OrderID: { type: "number" },
+                    Freight: { type: "number" },
+                    OrderDate: { type: "date" },
+                    ShipCountry: { type: "string" },
+                    ShipCity: { type: "string" },
+                    URL: { type: "string" },
+                  },
                 },
               },
-            },
-            pageSize: 10,
-            sort: {
-              field: "OrderDate",
-              dir: "desc",
-            },
-          });
-
-          // Grid column configuration
-          $("#ordersGrid").kendoGrid({
-            dataSource: gridDataSource,
-            height: 400,
-            pageable: true,
-            sortable: true,
-            filterable: true,
-            columns: [
-              {
-                field: "OrderID",
-                title: "Order ID",
-                width: 160,
-              },
-              {
+              pageSize: 10,
+              sort: {
                 field: "OrderDate",
-                title: "Order Date",
-                width: 200,
-                format: "{0:MM/dd/yyyy}",
+                dir: "desc",
               },
-              {
-                field: "ShipCountry",
-                title: "Ship Country",
-              },
-              {
-                field: "ShipCity",
-                title: "Ship City",
-              },
-            ],
-          });
+            });
+            // Grid column configuration
+            $("#ordersGrid").kendoGrid({
+              dataSource: gridDataSource,
+              height: 400,
+              pageable: true,
+              sortable: true,
+              filterable: true,
+              columns: [
+                {
+                  field: "OrderID",
+                  title: "Order ID",
+                  width: 160,
+                },
+                {
+                  field: "OrderDate",
+                  title: "Order Date",
+                  width: 200,
+                  format: "{0:MM/dd/yyyy}",
+                },
+                {
+                  field: "ShipCountry",
+                  title: "Ship Country",
+                },
+                {
+                  field: "ShipCity",
+                  title: "Ship City",
+                },
+                {
+                  field: "URL",
+                  title: "URL",
+                  template: "<a href='\#=URL#'>#=URL#</a>",
+                },
+              ],
+            });
+          }
+          console.log($("#dropdownfilter").data("kendoDropDownList").value());
+          // Specify column fields and load grid data
         });
       });
     </script>
